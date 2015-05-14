@@ -1,6 +1,6 @@
 # TODO
 #   - ASK EVERYTHING FIRST!
-#   - install chocolatey
+#   - install chocolatey (have to use 'choco -y' to install stuff)
 #   - install WinRAR
 #   - install browsers
 #   - install everything else
@@ -205,7 +205,7 @@ if ($Purpose["gaming"] -eq $true)
     # Ask for each app and store the accepted ones
     ForEach ($item in $GamingApps.KEYS.GetEnumerator()) 
     {
-        $Choice = $host.ui.PromptForChoice('Productivity Apps', "Should $item be installed?", $AppChoices, (0))
+        $Choice = $host.ui.PromptForChoice('Gaming Apps', "Should $item be installed?", $AppChoices, (0))
 
         if ($choice -eq 0)
         {
@@ -217,6 +217,19 @@ if ($Purpose["gaming"] -eq $true)
 Write-Output "`n`n"
 Write-Output $AppsToInstall
 
-Write-Host -noNewLine "Installing Chocolatey..."
-Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-Write-Host "done!"
+
+if (Get-Command choco -errorAction SilentlyContinue)
+{
+    Write-Output "Chocolatey already exists!"
+}
+else
+{
+    Write-Output "Installing Chocolatey..."
+    #Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+    Write-Output "Chocolately install done!"
+}
+
+ForEach ($app in $AppsToInstall)
+{
+    choco -y install $app
+}
