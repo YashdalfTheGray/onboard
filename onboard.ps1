@@ -6,14 +6,15 @@
 #   - install everything else
 
 # declare some variables
-$AppsToInstall = @('winrar', 'adobereader')
+$appsToInstall = @('winrar', 'adobereader')
 
-$Purpose = @{
+$purpose = @{
     "dev" = $false; 
     "media" = $false;
     "productivity" = $false;
     "gaming" = $false;
 }
+$appString = "";
 
 # intro
 Write-Output "`nComputer Onboarding Utility v0.0.1`n"
@@ -21,65 +22,65 @@ Write-Output "This Utility will automatically install apps after asking the user
 Write-Output "It also installs WinRAR, Adobe Reader and either Firefox or Chrome.`n"
 
 # basic choice structure
-$PurposeChoices = [System.Management.Automation.Host.ChoiceDescription[]](
+$purposeChoices = [System.Management.Automation.Host.ChoiceDescription[]](
     (New-Object System.Management.Automation.Host.ChoiceDescription "&Yes","This computer will be used for this purpose."),
     (New-Object System.Management.Automation.Host.ChoiceDescription "&No","This computer won't be used for this purpose.")
 )
 
 # Asking for the purpose of this computer
-if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for development?", $PurposeChoices, (1)) -eq 0) 
+if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for development?", $purposeChoices, (1)) -eq 0) 
 {
-    $Purpose["dev"] = $true
+    $purpose["dev"] = $true
 }
 
-if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for media?", $PurposeChoices, (1)) -eq 0) 
+if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for media?", $purposeChoices, (1)) -eq 0) 
 {
-    $Purpose["media"] = $true
+    $purpose["media"] = $true
 }
 
-if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for productivity?", $PurposeChoices, (1)) -eq 0) 
+if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for productivity?", $purposeChoices, (1)) -eq 0) 
 {
-    $Purpose["productivity"] = $true
+    $purpose["productivity"] = $true
 }
 
-if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for gaming?", $PurposeChoices, (1)) -eq 0) 
+if ($host.ui.PromptForChoice('Purpose', "Will this computer be used for gaming?", $purposeChoices, (1)) -eq 0) 
 {
-    $Purpose["gaming"] = $true
+    $purpose["gaming"] = $true
 }
- 
-Write-Output $Purpose
 
-# Asking for which browser to install
-$BrowserChoices = [System.Management.Automation.Host.ChoiceDescription[]](
+# Set up some browser choices
+$browserChoices = [System.Management.Automation.Host.ChoiceDescription[]](
     (New-Object System.Management.Automation.Host.ChoiceDescription "&Chrome","Install Google Chrome"),
-    (New-Object System.Management.Automation.Host.ChoiceDescription "&Firefox","Install Mozilla Firefox")
+    (New-Object System.Management.Automation.Host.ChoiceDescription "&Firefox","Install Mozilla Firefox"),
+    (New-Object System.Management.Automation.Host.ChoiceDescription "&None","Don't install another browser")
 )
 
-
-if ($host.ui.PromptForChoice('Browser', "What browser should be installed?", $BrowserChoices, (0)) -eq 0) 
+# Asking for which browser to install
+$choice = $host.ui.PromptForChoice('Browser', "What browser should be installed?", $browserChoices, (0))
+if ($choice -eq 0) 
 {
     if ([System.IntPtr]::Size -eq 4) 
     {
-        $AppsToInstall += @('googlechrome')
+        $appsToInstall += @('googlechrome')
     }
     else 
     {
-        $AppsToInstall += @('google-chrome-x64')
+        $appsToInstall += @('google-chrome-x64')
     }
 }
-else 
+elseif ($choice -eq 1)
 {
-    $AppsToInstall += @('firefox')
+    $appsToInstall += @('firefox')
 }
 
 # Set up an app choices object
-$AppChoices = [System.Management.Automation.Host.ChoiceDescription[]](
+$appChoices = [System.Management.Automation.Host.ChoiceDescription[]](
         (New-Object System.Management.Automation.Host.ChoiceDescription "&Yes","Install the app"),
         (New-Object System.Management.Automation.Host.ChoiceDescription "&No","Don't install the app")
     )
 
 # Get into asking the development related questions
-if ($Purpose["dev"] -eq $true) 
+if ($purpose["dev"] -eq $true) 
 {
     # Set up a choice object for text editors
     $EditorChoices = [System.Management.Automation.Host.ChoiceDescription[]](
@@ -90,27 +91,27 @@ if ($Purpose["dev"] -eq $true)
     )
 
     # Ask for which text editor to install first
-    $Choice = $host.ui.PromptForChoice('Text Editor', "What text editor should be installed?", $EditorChoices, (0))
+    $choice = $host.ui.PromptForChoice('Text Editor', "What text editor should be installed?", $EditorChoices, (0))
 
     if ($choice -eq 0)
     {
-        $AppsToInstall += @('sublimetext3')
+        $appsToInstall += @('sublimetext3')
     }
     elseif ($choice -eq 1)
     {
-        $AppsToInstall += @('notepadplusplus')
+        $appsToInstall += @('notepadplusplus')
     }
     elseif ($choice -eq 2)
     {
-        $AppsToInstall += @('atom')
+        $appsToInstall += @('atom')
     }
     elseif ($choice -eq 3)
     {
-        $AppsToInstall += @('brackets')
+        $appsToInstall += @('brackets')
     }
 
     # Set up a dictionary to relate app names to chocolatey package names
-    $DevApps = @{
+    $devApps = @{
         "git" = 'git';
         "node.js" = 'nodejs.install';
         "Yeoman" = 'yeoman';
@@ -134,22 +135,22 @@ if ($Purpose["dev"] -eq $true)
     }
 
     # Ask for each app and store the accepted ones
-    ForEach ($item in $DevApps.KEYS.GetEnumerator()) 
+    ForEach ($item in $devApps.KEYS.GetEnumerator()) 
     {
-        $Choice = $host.ui.PromptForChoice('Development Apps', "Should $item be installed?", $AppChoices, (0))
+        $choice = $host.ui.PromptForChoice('Development Apps', "Should $item be installed?", $appChoices, (0))
 
         if ($choice -eq 0)
         {
-            $AppsToInstall += @($DevApps[$item])
+            $appsToInstall += @($devApps[$item])
         }
     }
 }
 
 # Get into asking the media related questions
-if ($Purpose["media"] -eq $true) 
+if ($purpose["media"] -eq $true) 
 {
     # Set up a dictionary to relate apps names to chocolatey package names
-    $MediaApps = @{
+    $mediaApps = @{
         "VLC Player" = 'vlc';
         "iTunes" = 'itunes';
         "Spotify" = 'spotify';
@@ -160,40 +161,40 @@ if ($Purpose["media"] -eq $true)
     }
 
     # Ask for each app and store the accepted ones
-    ForEach ($item in $MediaApps.KEYS.GetEnumerator()) 
+    ForEach ($item in $mediaApps.KEYS.GetEnumerator()) 
     {
-        $Choice = $host.ui.PromptForChoice('Media Apps', "Should $item be installed?", $AppChoices, (0))
+        $choice = $host.ui.PromptForChoice('Media Apps', "Should $item be installed?", $appChoices, (0))
 
         if ($choice -eq 0)
         {
-            $AppsToInstall += @($MediaApps[$item])
+            $appsToInstall += @($mediaApps[$item])
         }
     }
 }
 
 # Get into asking the productivity related questions
-if ($Purpose["productivity"] -eq $true) 
+if ($purpose["productivity"] -eq $true) 
 {
     # Set up a dictionary to relate apps names to chocolatey package names
-    $ProductivityApps = @{
+    $productivityApps = @{
         "Evernote" = 'evernote';
         "CutePDF Writer" = 'cutepdf';
     }
 
     # Ask for each app and store the accepted ones
-    ForEach ($item in $ProductivityApps.KEYS.GetEnumerator()) 
+    ForEach ($item in $productivityApps.KEYS.GetEnumerator()) 
     {
-        $Choice = $host.ui.PromptForChoice('Productivity Apps', "Should $item be installed?", $AppChoices, (0))
+        $choice = $host.ui.PromptForChoice('Productivity Apps', "Should $item be installed?", $appChoices, (0))
 
         if ($choice -eq 0)
         {
-            $AppsToInstall += @($ProductivityApps[$item])
+            $appsToInstall += @($productivityApps[$item])
         }
     }
 }
 
 # Get into asking the gaming related questions
-if ($Purpose["gaming"] -eq $true) 
+if ($purpose["gaming"] -eq $true) 
 {
     # Set up a dictionary to relate apps names to chocolatey package names
     $GamingApps = @{
@@ -205,19 +206,16 @@ if ($Purpose["gaming"] -eq $true)
     # Ask for each app and store the accepted ones
     ForEach ($item in $GamingApps.KEYS.GetEnumerator()) 
     {
-        $Choice = $host.ui.PromptForChoice('Gaming Apps', "Should $item be installed?", $AppChoices, (0))
+        $choice = $host.ui.PromptForChoice('Gaming Apps', "Should $item be installed?", $appChoices, (0))
 
         if ($choice -eq 0)
         {
-            $AppsToInstall += @($GamingApps[$item])
+            $appsToInstall += @($GamingApps[$item])
         }
     }
 }
 
-Write-Output "`n`n"
-Write-Output $AppsToInstall
-
-
+# Check if Chocolatey is installed, otherwise install it
 if (Get-Command choco -errorAction SilentlyContinue)
 {
     Write-Output "Chocolatey already exists!"
@@ -229,7 +227,11 @@ else
     Write-Output "Chocolately install done!"
 }
 
-ForEach ($app in $AppsToInstall)
+# Compose a string of apps that were selected to be installed
+ForEach ($App in $appsToInstall)
 {
-    choco -y install $app
+    $appString += $App + ' '
 }
+
+# INSTALL!
+choco install -y $appString
