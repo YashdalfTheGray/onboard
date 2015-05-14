@@ -2,17 +2,27 @@
 
 A simple command line utility to spin up a newly formatted Windows computer. This utility depends on Windows PowerShell and Chocolatey. 
 
-## Running
+## Quick Setup
 
-The first step to take is to make sure that Windows PowerShell is installed. If opening the start menu and typing "powershell" doesn't yield results, Windows Powershell is not installed. This should NOT be the case on Windows 7 or higher. 
+Download `onboard.ps1`.
+
+The first step to take is to make sure that Windows PowerShell is installed. If opening the start menu and typing "powershell" doesn't yield results, Windows PowerShell is not installed. This should NOT be the case on Windows 7 or higher. 
+
+The next step is going to require PowerShell to be **run as Administrator**. 
 
 Next, the execution policy is going to have to be set. This can be done using the command `Set-ExecutionPolicy RemoteSigned`. This tells PowerShell to execute scripts written on the computer. 
 
 Since `onbard` is not written on the computer, running `onbaord` will require right clicking on `onboard.ps1`, clicking on Properties, and then unblocking the script. Another way to achieve this is to run `Set-ExecutionPolicy Unrestricted` which will allow all scripts after confirming execution. 
 
-Once the computer has been onboarded, Powershell can be told to block all execution again using the command `Set-ExecutionPolicy Restricted`. 
+**Note**: The value of the PowerShell execution policy can be checked at any time using the command `Get-ExecutionPolicy`. 
 
-The value of the PowerShell execution policy can be checked at any time using the command `Get-ExecutionPolicy`. 
+## Running
+
+This requires PowerShell to be **run as Administrator**.
+
+Once PowerShell is configured to play nicely, run `path\to\onboard.ps1`. If you are in the directory that `onboard.ps1` lives in, execute `.\onboard.ps1` instead. 
+
+Once the computer has been onboarded, PowerShell can be told to block all execution again using the command `Set-ExecutionPolicy Restricted`. 
 
 # [Chocolatey](https://chocolatey.org/)
 
