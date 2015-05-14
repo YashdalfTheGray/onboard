@@ -228,10 +228,12 @@ else
 }
 
 # Compose a string of apps that were selected to be installed
-ForEach ($App in $appsToInstall)
+ForEach ($app in $appsToInstall)
 {
-    $appString += $App + ' '
+    # This doesn't work, even though it seems like it is supposed to.
+    # $appString += $app + ' '
+    choco install -y $app
 }
 
 # INSTALL!
-choco install -y $appString
+# choco install -y $appString
