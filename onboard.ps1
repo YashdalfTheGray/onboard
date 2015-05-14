@@ -156,6 +156,7 @@ if ($Purpose["media"] -eq $true)
         "GIMP" = 'gimp';
         "Calibre" = 'calibre';
         "Audacity" = 'audacity';
+        "Plex Media Server" = 'plexmediaserver';
     }
 
     # Ask for each app and store the accepted ones
@@ -215,3 +216,7 @@ if ($Purpose["gaming"] -eq $true)
 
 Write-Output "`n`n"
 Write-Output $AppsToInstall
+
+Write-Host -noNewLine "Installing Chocolatey..."
+Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+Write-Host "done!"
