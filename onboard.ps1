@@ -236,4 +236,4 @@ ForEach ($app in $appsToInstall)
 }
 
 # INSTALL!
-# choco install -y $appString
+# choco install -y $appString.Trim()
