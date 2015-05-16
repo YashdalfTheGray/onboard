@@ -22,6 +22,8 @@ This requires PowerShell to be **run as Administrator**.
 
 Once PowerShell is configured to play nicely, run `path\to\onboard.ps1`. If you are in the directory that `onboard.ps1` lives in, execute `.\onboard.ps1` instead. 
 
+Once run, the script will ask whether to install each app, enabling selective installation. 
+
 Once the computer has been onboarded, PowerShell can be told to block all execution again using the command `Set-ExecutionPolicy Restricted`. 
 
 # [Chocolatey](https://chocolatey.org/)
